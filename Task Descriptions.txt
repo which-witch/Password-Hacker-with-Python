@@ -1,0 +1,222 @@
+Stage 1
+
+Description
+Imagine some admin who runs a website on the Internet. The site is becoming very popular, and a lot of people register. Filling in their profiles, they leave some information there that is not meant to be public, for example, information about their credit cards.
+
+The admin completely forgot about the security of the site, so now you can log in with admin privileges without even having a login and password!
+
+Terms like "hacking" and "hacker" are frequently associated with negativity. However, in this project, we will be operating as White Hats. Throughout all stages, simulated scenarios will be employed. Remember, any skills and knowledge acquired during this project should be used exclusively for ethical and educational purposes.
+
+The first task of this project is to go to the admin's site; it will immediately give out all the secret information. Remember, as soon as you enter the site as an admin, you will automatically obtain all the private data of the site. It will get harder: the tasks of all other stages of the project will be to crack the admin password. Good luck!
+
+Your program should connect to the server using an IP address and a port from the command line arguments. You can use socket module to create this program.
+
+Objectives
+Your program will receive command line arguments in this order:
+
+IP address
+
+port
+
+message for sending
+
+The algorithm is the following:
+
+Create a new socket.
+
+Connect to a host and a port using the socket.
+
+Send a message from the third command line argument to the host using the socket.
+
+Receive the server’s response.
+
+Print the server’s response.
+
+Close the socket.
+
+Examples
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
+
+Example 1:
+
+> python hack.py localhost 9090 password
+Wrong password!
+Example 2:
+
+> python hack.py 127.0.0.1 9090 qwerty
+Connection Success!
+
+
+
+Stage 2
+
+Description
+The admin noticed someone sneaking around the site with admin rights and came up with a password. Now to log in as an admin, you need to enter the password first. Maybe the admin has set a relatively easy and short password so that it is easy to remember? Let's try to brute force all possible passwords to enter the site!
+
+So far the program is very simplistic: it’s time to improve it so that it can generate different variants of the password and then try each one. The admin of the server doesn’t hide the information that passwords vary in length and may include letters from a to z and numbers from 0 to 9. You should start with a,b,c,....,z,0,1,..aa,ab,ac,ad and continue until your password is correct. The itertools.product() function can help you here. It’s very important to try all the variants of every length because otherwise your program risks never finding the password!
+
+If the password is correct, you will receive the Connection success! message from the server. Otherwise, you will receive the Wrong password! message. The server itself cannot receive more than a million attempts, so if your program works indefinitely, you will see the unfortunate message Too many attempts.
+
+Objectives
+In this stage, you should write a program that:
+
+Parses the command line and gets two arguments that are IP address and port.
+
+Tries different passwords until it finds the correct one.
+
+Prints the password it found.
+
+Note that you only have to connect to the server once and then send messages multiple times. Don't reconnect to the server before sending every message. However, each message needs to be encoded before sending and decoded after receiving from the server.
+
+Also, keep in mind that here and throughout the project, the password is randomly generated every time you check your code.
+
+Example
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
+
+> python hack.py localhost 9090
+pass
+
+
+Stage 3
+
+Description
+Looks like you can already call yourself a hacker! However, the situation gets more complicated: the admin improves the server and our simple brute force attack is no longer working. Well, this shouldn't hold you back: you can provide your program with a prepared dictionary of typical passwords (it was generated using a database with over a million real-life passwords).
+
+That's not all: the admin decided to outsmart us and changed the case of some letters in the new password so that we could not crack it using the password dictionary. Let's outsmart the admin and try all possible combinations of upper and lower case for each letter for all words of the password dictionary. We won't have to try too much since for a 6-letter word you'll get only 64 possible combinations.
+
+Now not only do you have to try each element of the dictionary but you also need to change the case of some letters to find the correct password. And when you've entered the correct password, the server will greet you with "Connection success!".
+
+This has increased the time of hacking greatly, so using brute force is probably not an option. Use the dictionary of standard passwords, and do not forget to try changing the cases of different letters. For example, there is the word ‘qwerty’ in the dictionary, but the cunning admin sets it to ‘qWeRTy’. Your program should make it possible to hack such passwords, too.
+
+Objectives
+In this stage, you should write a program that:
+
+Parses the command line and gets two arguments that are IP address and port.
+
+Finds the correct password using the list of typical passwords.
+
+Prints the password it found.
+
+While trying to figure out the password you can try using the zip() function to pair up upper and lower case letters and * to unpack lists to be used as argument to itertools.product().
+
+Put the file with typical passwords into your working directory which you can find with a little help of the os module or you may can use absolute paths for certainty. And don't forget to log the operations of your program for easier debugging.
+
+To avoid ConnectionResetError and ConnectionAbortedError, you should close the client socket and end your program when you receive "Connection success!" from the server and print the correct password. Make sure that the program isn't stuck in a loop even after after printing the correct password.
+
+Note that here and throughout the project, the password is different every time you check your code.
+
+Example
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
+
+> python hack.py localhost 9090
+qWeRTy
+
+
+Stage 4
+
+Description
+The server is becoming smarter along with your hacking program. Now the admin has implemented a security system by login and password. In order to access the site with admin privileges, you need to know the admin's login and password. Fortunately, we have a dictionary of different logins and a very interesting vulnerability. You need to improve your program once again to hack the new system.
+
+Also, now the admin has made a complex password that is guaranteed to be absent in the databases since it's randomly generated from several characters.
+
+The server now uses JSON to send messages.
+
+First of all, you should adjust your program so that it can send the combination of login and password in JSON format to the server. Your request should now look like this:
+
+{
+    "login": "admin",
+    "password": "12345678"
+}
+In case of the wrong login, the response you receive looks like this:
+
+{
+    "result": "Wrong login!"
+}
+If you got the login right but failed to find the password, you get this:
+
+{
+    "result": "Wrong password!"
+}
+If your request is not in a valid JSON format or there is no "login" or "password" field, the response will be:
+
+{
+    "result": "Bad request!"
+}
+If some exception happens, you'll see this result:
+
+{
+    "result": "Exception happened during login"
+}
+When you finally succeed in finding both the login and the password, you'll see the following:
+
+{
+    "result": "Connection success!"
+}
+Use the dictionary of typical admin logins. Since you don’t know the login, you should try different variants from the dictionary the same way you did at the previous stage with the passwords.
+
+As for passwords, they’ve become yet harder, so a simple dictionary is no longer enough. The passwords are formed using a combination of lower and upper case letters as well as numbers. Fortunately, a vulnerability has been found: the ‘exception' message pops up when the symbols you tried for the password match the beginning of the correct one.
+
+Use any password when searching for the login, as the server first checks if the login is correct. Therefore, if the server responds with 'wrong password' or with an exception instead of 'wrong login', it means that the used login is correct.
+
+Try to implement logging in your program to simplify the debugging process.
+
+Objectives
+Your algorithm is the following:
+
+Try all logins with any password.
+
+When you find the login, try out every possible password of length 1.
+
+When an exception occurs, you know that you found the first character of the password.
+
+Use the found login and the found letter to find the second letter of the password.
+
+Repeat until you receive the 'success' message.
+
+Finally, your program should print the combination of login and password in JSON format. The examples show two ways of what the output can look like.
+
+Examples
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
+
+Example 1:
+
+> python hack.py localhost 9090
+{
+    "login" : "superuser",
+    "password" : "aDgT9tq1PU0"
+}
+Example 2:
+
+> python hack.py localhost 9090
+{"login": "new_user", "password": "Sg967s"}
+
+
+Stage 5
+
+Description
+Your program has successfully hacked the new system! However, you've been spotted: the admin noticed your first failed attempts, found the vulnerability and made a patch. You should overcome this patch and hack the system again. It’s not easy being a hacker!
+
+The admin has improved the server: the program now catches the exception and sends a simple ‘wrong password’ message to the client even when the real password starts with current symbols.
+
+But here's the thing: the admin probably just caught this exception. We know that catching an exception takes the computer a long time, so there should be a delay in the server response when this exception takes place. You can use it to hack the system: count the time period in which the response comes and find out which starting symbols work out for the password.
+
+Objectives
+In this stage, you should write a program that uses the time vulnerability to find the password.
+
+Use the list of logins from the previous stage.
+Output the result as you did this in the previous stage.
+Examples
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
+
+Example 1:
+
+> python hack.py localhost 9090
+{
+    "login" : "su",
+    "password" : "fTUe3O99Rre"
+}
+Example 2:
+
+> python hack.py localhost 9090
+{"login": "admin3", "password": "mlqDz33x"}
+
